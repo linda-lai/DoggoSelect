@@ -101,9 +101,29 @@ function fetchBreedImage() {
 select.addEventListener('change', fetchBreedImage);
 // Call on card menu, a click event will generate a new image, using fetchBreedImage as the callback
 card.addEventListener('click', fetchBreedImage);
-
+// Call on form menu, a submit event will generate a new POST, using postData as the callback
+form.addEventListener('submit', postData);
 
 // ------------------------------------------
 //  POST DATA
 // ------------------------------------------
+// Using POST to pass additional data through the fetchData method
+function postData(e) {
+    e.preventDefault();
+    // Targeting the name and comment in the <label for=> tags in the <form>
+    const name = document.getElementById('name').value;
+    const comment = document.getElementById('comment').value;
 
+    // Submit contents to JSON Placeholder API using fetch(), to send data to a server, call the POST method as the second parameter for object control with three keys: method, headers and body
+    fetch('https://jsonplaceholder.typicode.com/comments', {
+        method: 'POST', // indicates type of request
+        headers: {
+            'Content-Type': 'application/json' // usually contained within an object, specifies media type for JSON response, communicates to server data has been encoded with JSON
+        },
+        body: JSON.stringify({ name, comment }) // sent to server in the body of the response in a stringified JSON response
+    })
+        .then(checkStatus)
+        .then(res => res.json())
+        // Console.logs on object with Comment text submitted if successful - the JSON Placeholder API sends submitted data back to us with an API, confirms test POST was successful
+        .then(data => console.log(data))
+}
