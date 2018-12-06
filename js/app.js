@@ -16,36 +16,32 @@ function fetchData(url) {
         .catch(error => console.log(`Ruh-roh! Something's gone wrong.`, error)) // if promise cannot be fulfilled, e.g. if API URL is incorrect
 }
 
-// Using breeds list endpoint to return a list of all the master breeds and populate the select list - chains .then methods to convert data and returned response to JSON
-fetchData('https://dog.ceo/api/breeds/list')
-    // .then(response => response.json())
-
-    // The message data returned here contains an array of dog breeds that need to be iterated through and inserted into the select menu
-    // .then(data => console.log(data))
-
-    .then(data => generateOptions(data.message)) // fetch() request responds with JSON data, will call to a function called generateOptions
-
-
-// To display the random dog url on the page
-fetchData('https://dog.ceo/api/breeds/image/random')
-    // .then(response => console.log(response)) // fetch then returns a response object, data is contained in body
-    
-    // API used returns data in JSON, needs to be parsed
-    // reads the response, returns a promise that resolves to JSON (implicitly returned)
-    // .then(response => response.json())
-
-    // To do something to the JSON data - to view returned object values:
-    // .then(data => console.log(data))
-
-    // Contains a key with the field message with the image requested - random image url as a string
-    // .then(data => console.log(data.message))
-
-    .then(data => generateImage(data.message)) // fetch() request responds with JSON data, will call to a function called generateImage
+// ---------- Using Promise.all ----------//
+// Accepts any iterable (string or array, usually an array of promises)
+// Fetch both URLs, wait for both to return before moving on, once resolved, used response to generate options and random images
+// Composing multiple promises into a single returned promise - one returned array of values
+// Either all promises must succeed, or catch will be triggered
+Promise.all([
+    // Using breeds list endpoint to return a list of all the master breeds and populate the select
+    fetchData('https://dog.ceo/api/breeds/list'),
+    // To display the random dog url on the page
+    fetchData('https://dog.ceo/api/breeds/image/random')
+  ])
+  // When promise is successfully resolved, returned as an array of values, values returned from completed promises in the same order they were passed in
+  // To view array returned by Promise.all:
+  // .then(data => console.log(data))
+    .then(data => {
+      const breedList = data[0].message;
+      const randomImage = data[1].message;
+      
+      generateOptions(breedList);
+      generateImage(randomImage);
+    })
 
 // ------------------------------------------
 //  HELPER FUNCTIONS
 // ------------------------------------------
-// How to handle failed HTTP responses - to check if response object does not return ok:true:
+// How to handle failed HTTP responses - to check if response object does not return ok:true
 // To throw and error, create a new function to check if the promise resolved with the response objects ok property set to true 
 function checkStatus(response) {
     // Passes in response, if response key set to OK is true, the promise is resolved with the response
