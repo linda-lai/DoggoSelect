@@ -114,14 +114,16 @@ function postData(e) {
     const name = document.getElementById('name').value;
     const comment = document.getElementById('comment').value;
 
-    // Submit contents to JSON Placeholder API using fetch(), to send data to a server, call the POST method as the second parameter for object control with three keys: method, headers and body
-    fetch('https://jsonplaceholder.typicode.com/comments', {
+    const config = {
         method: 'POST', // indicates type of request
         headers: {
             'Content-Type': 'application/json' // usually contained within an object, specifies media type for JSON response, communicates to server data has been encoded with JSON
         },
         body: JSON.stringify({ name, comment }) // sent to server in the body of the response in a stringified JSON response
-    })
+    }
+
+    // Submit contents to JSON Placeholder API using fetch(), to send data to a server, call the POST method as the second parameter for object control with three keys: method, headers and body - contained in config variable
+    fetch('https://jsonplaceholder.typicode.com/comments', config)
         .then(checkStatus)
         .then(res => res.json())
         // Console.logs on object with Comment text submitted if successful - the JSON Placeholder API sends submitted data back to us with an API, confirms test POST was successful
