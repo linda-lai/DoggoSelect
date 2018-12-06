@@ -11,7 +11,9 @@ const form = document.querySelector('form');
 function fetchData(url) {
     return fetch(url) // checks the status of the response => then parses to JSON => otherwise will catch error
         // .then(res => console.log(res))
+        .then(checkStatus)
         .then(res => res.json())
+        .catch(error => console.log(`Ruh-roh! Something's gone wrong.`, error)) // if promise cannot be fulfilled, e.g. if API URL is incorrect
 }
 
 // Using breeds list endpoint to return a list of all the master breeds and populate the select list - chains .then methods to convert data and returned response to JSON
@@ -43,6 +45,19 @@ fetchData('https://dog.ceo/api/breeds/image/random')
 // ------------------------------------------
 //  HELPER FUNCTIONS
 // ------------------------------------------
+// How to handle failed HTTP responses - to check if response object does not return ok:true:
+// To throw and error, create a new function to check if the promise resolved with the response objects ok property set to true 
+function checkStatus(response) {
+    // Passes in response, if response key set to OK is true, the promise is resolved with the response
+    if (response.ok) {
+        // Resolved with the given value - ie. the response object
+        return Promise.resolve(response);
+    } else {
+        // If resolve is unsuccessful, reject the promise, which will activate the catch call, return an Error object
+        // Error description is set to response statusText
+        return Promise.reject(new Error(response.statusText));
+    }
+}
 
 // Create a generateOptions function to iterate through the dog breed JSON data array and insert as HTML <options> from the <select> parent
 function generateOptions(data) {
